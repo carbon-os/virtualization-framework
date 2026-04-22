@@ -20,16 +20,24 @@ Available as `libvirtualization` via vcpkg.
 
 ---
 
-## Requirements
+## Backends
 
-| Platform | Compiler      | Hypervisor                                              | Min OS        |
-|----------|---------------|---------------------------------------------------------|---------------|
-| macOS    | Clang 17+     | Hypervisor.framework (Apple Silicon or Intel)           | macOS 11      |
-| Linux    | GCC 12 / Clang 17 | KVM (`/dev/kvm` must be accessible)                | kernel 5.10+  |
-| Windows  | MSVC 2022+    | Windows Hypervisor Platform (optional feature)          | Windows 11    |
+| Host OS | Arch          | Backend                      | API / Interface       | Min OS        | Compiler          | 2D Display | 3D (VirGL) |
+|---------|---------------|------------------------------|-----------------------|---------------|-------------------|:----------:|:----------:|
+| macOS   | arm64, x86_64 | Hypervisor.framework         | Low-level HVF         | macOS 11      | Clang 17+         | ✅         | ✅         |
+| macOS   | arm64, x86_64 | Virtualization.framework     | High-level VZ         | macOS 13      | Clang 17+         | ✅         | ✅         |
+| Linux   | arm64, x86_64 | KVM                          | `/dev/kvm`            | kernel 5.10+  | GCC 12 / Clang 17 | ✅         | ✅         |
+| Windows | arm64, x86_64 | Windows Hypervisor Platform  | Low-level WHP         | Windows 11    | MSVC 2022+        | ✅         | ✅         |
+| Windows | arm64, x86_64 | Hyper-V                      | WMI + `AF_HYPERV`     | Windows 11    | MSVC 2022+        | ✅         | ⚠️ planned |
 
-- CMake 3.25+
-- C++20
+> **macOS note:** sample binaries must be signed with the `com.apple.security.hypervisor` entitlement.
+> The build system handles this automatically via `codesign` if `resources/entitlements.plist` is present.
+>
+> **Linux note:** `/dev/kvm` must be accessible to the running user.
+>
+> **Windows note:** Windows Hypervisor Platform and Hyper-V are optional OS features that must be enabled before use.
+
+Requires **CMake 3.25+** and **C++20** on all platforms.
 
 ---
 
@@ -66,10 +74,6 @@ cd virtualization-framework
 cmake -B build
 cmake --build build
 ```
-
-**macOS note:** sample binaries must be signed with the `com.apple.security.hypervisor`
-entitlement before they will run. The build system does this automatically via `codesign`
-if `resources/entitlements.plist` is present.
 
 ---
 
